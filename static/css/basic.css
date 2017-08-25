@@ -1,0 +1,17 @@
+body{
+    background-color: black;
+}
+html{
+    background-color: black;
+}
+.btn{
+    background-color:black;
+    border-color: black;
+}
+#count{
+    color: white;
+}
+#counter{
+    color: white;
+    font-size: 32px;
+}

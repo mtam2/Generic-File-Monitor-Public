@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="refresh" content="1200">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+        <meta name="author" content="">
+        <meta charset="utf-8">
+        <link href="./static/css/bootstrap.min.css" rel="stylesheet"/> 
+        <link href="./static/css/basic.css" rel="stylesheet"/>
+        <script src="./static/js/jquery.min.js"></script>
+        <script src="./static/js/bootstrap.min.js"></script> 
+        <!--<script src="../static/js/highcharts.js"></script>-->
+        <script src="./static/js/main.js"></script> 
+
+        <!-- SUPPORT FOR IE6-8 OF HTML5 ELEMENTS -->
+        <!--[if lt IE 9]>
+                    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+            <![endif]-->
+
+        <!-- <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}"> -->
+        <title>Counter</title>
+    </head>
+
+    <body class="text-center">
+        <div class="text-center">
+            <div id='counter'></div>
+            <label id = 'counter_hourly'></label>
+            <div id = 'files'></div>
+        </div>
+
+        <script>
+            var count = {{ count|safe }}
+
+            var anomaly = {{ anomaly|safe }}
+            var anomaly_flag = {{ anomaly_flag|safe }}
+
+            var files = {{ files|safe }}
+
+            $('#counter').html(count + " Days without Interface File Failure");        
+            if (count == 0){
+                document.getElementById("counter").style.color = "red";}
+            else if(count <= 3){
+                document.getElementById("counter").style.color = "orange";}
+            else{
+                document.getElementById("counter").style.color = "#49fb35"}
+
+
+            //     document.getElementById("counter_hourly").innerHTML= anomaly
+
+            // if (anomaly_flag == 1){
+            //     document.getElementById("counter_hourly").style.color = "orange";}
+            // else if(anomaly_flag == 0){
+            //     document.getElementById("counter_hourly").style.color = "#49fb35";}
+                       
+            document.getElementById("files").style.color = "red";
+            
+            if (files != 0){
+                var $table = $( "<table align=\"center\"></table>" );
+
+                for ( var i = 0; i < files.length; i++ ) {
+                    var emp = files[i];
+                    var $line = $( "<tr></tr>" );
+                    $line.append( $( "<td></td>" ).html( emp ) );
+                    $table.append( $line );
+                }
+                document.getElementById("files").innerHTML="Files Missing: ";
+                $table.appendTo('#files');
+                document.getElementById("files").style.color = "red";
+            }
+        </script>
+    </body>
+</html>

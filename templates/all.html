@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="refresh" content="1200">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+        <meta name="author" content="">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta charset="utf-8">
+        <link href="./static/css/bootstrap.min.css" rel="stylesheet"/> 
+        <link href="./static/css/basic.css" rel="stylesheet"/>
+        <script src="./static/js/jquery.min.js"></script>
+        <script src="./static/js/bootstrap.min.js"></script> 
+        <script src="./static/js/highcharts.js"></script>
+        <script src="./static/js/main.js"></script> 
+
+        <!-- SUPPORT FOR IE6-8 OF HTML5 ELEMENTS -->
+        <!--[if lt IE 9]>
+                    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+            <![endif]-->
+
+        <!-- <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}"> -->
+        <title>File Count</title>
+    </head>
+
+    <body>
+        <div class="text-center">
+            <button id="hide_outliers" type="button" class="btn btn-primary autocompare">Toggle Outliers</button>
+            <button id="hide_series" type="button" class="btn btn-primary autocompare">Hide All Lines</button>
+            <button id="show_series" type="button" class="btn btn-primary autocompare">Show All Lines</button>
+        </div>
+        <div id='container' class="chart"></div>
+
+{#        <div>#}
+{##}
+{#            <label for="days" style="color: white">select days to view</label>#}
+{#            <input id="days_textbox" type="number" name="days to view" >#}
+{#            <button id="days_view" type="button" class="btn" style="color: white">view</button>#}
+{#            <label id='error_days' style="color: red"></label>#}
+{##}
+{#        </div>#}
+
+        <script>
+            var series = {{ series|safe }}
+            var chart = {{ chart|safe }}
+            var linkToDay = {plotOptions: {
+                    line: {
+                        marker: {
+                            radius: 2,
+                                states: {
+                                    select: {
+                                        fillColor: 'white',
+                                        radius: 6
+                                    }
+                                }
+                        }
+                    },
+                    series: {
+                        cursor: 'pointer',
+                        point: {
+                        events: {
+                            click: function (event) {
+                                window.open('/date?date='+this.series.xAxis.categories[this.index], '_self')
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            var dismiss_series = [0,1,2,3,14,15];
+            var filter_flag = {{ filter_flag|safe }};
+
+            var result = $.extend(chart, linkToDay);
+            var chart = Highcharts.chart('container', result );
+            // button handler
+            var outliers = {{ outliers|safe }};
+            var i = 0;
+            for (x = 0; x< series.length; x++) {
+                    for (i = 0; i < outliers[x].length; i++) {
+                        chart.series[x].data[outliers[x][i]].select(null, true);
+                    }
+                    chart.series[x].setVisible(false, false);
+
+            }
+
+            if (filter_flag == 'all') {
+
+                chart.series[0].setVisible(true, true);
+
+            }
+            else if (filter_flag == 'lower'){
+
+                for (x = 0; x < series.length; x++) {
+                    if ($.inArray(x, dismiss_series) == -1) {
+                        chart.series[x].setVisible(true, true);
+                    }
+                }
+            }
+            else if (filter_flag == 'item_header'){
+
+                for (x = 0; x < series.length; x++) {
+                    if ($.inArray(x, [0,1,2,3,]) != -1) {
+                        chart.series[x].setVisible(true, true);
+                    }
+                }
+            }
+
+            $('#hide_outliers').click(function () {
+                for (x = 0; x < series.length; x++) {
+                    for (i = 0; i < outliers[x].length; i++)
+                        chart.series[x].data[outliers[x][i]].select(null, true);
+                }
+            });
+
+            $('#hide_series').click(function(){
+                for (x = 0; x < series.length; x++)
+                    chart.series[x].setVisible(false, false);
+            }); 
+
+            $('#show_series').click(function(){
+                for (x = 0; x < chart.series.length; x++)
+                    chart.series[x].setVisible(true, false);
+            });
+
+            //TODO: Catch exceptions (false datatype as input etc.)
+            $('#days_view').click(function(){
+
+                var days = document.getElementById("days_textbox").value;
+
+                    window.open('/?days='+parseInt(days), '_self')
+
+            });
+        </script>
+    </body>
+</html>

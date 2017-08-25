@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="refresh" content="1200">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+        <meta name="author" content="">
+        <meta charset="utf-8">
+        <link href="./static/css/bootstrap.min.css" rel="stylesheet"/> 
+        <link href="./static/css/basic.css" rel="stylesheet"/>
+        <script src="./static/js/jquery.min.js"></script>
+        <script src="./static/js/bootstrap.min.js"></script> 
+        <script src="./static/js/highcharts.js"></script>
+        <script src="./static/js/main.js"></script> 
+
+        <!-- SUPPORT FOR IE6-8 OF HTML5 ELEMENTS -->
+        <!--[if lt IE 9]>
+                    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+            <![endif]-->
+
+        <!-- <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}"> -->
+        <title>Hourly File Count</title>
+    </head>
+    
+    <body>
+        <div class="text-center">
+            <a class="btn" href="#" onClick="window.open('/', '_self')" >
+                <button type="button" class="btn btn-primary"> Home </button></a>​
+            <button id="hide_series" type="button" class="btn btn-primary autocompare">Hide All Lines</button>
+            <button id="show_series" type="button" class="btn btn-primary autocompare">Show All Lines</button>    
+        </div>
+
+        <div>
+            <label id="Weekday" style="color: white">Weekday</label>
+        </div>
+
+        <div id='container' class="chart"></div>
+
+
+        <script>
+            var series = {{ series|safe }}
+            var date = {{ date|safe }}
+{#                var d =new Date(date).toUTCString();#}
+
+{#            document.getElementById("Date").innerHTML = date[0];#}
+            document.getElementById("Weekday").innerHTML =  new Date(date).toUTCString().slice(0,16);
+
+            var chart = {{ chart|safe }}
+            var linkToDay = {
+                plotOptions: {
+                    line: {
+                        marker: {
+                            radius: 2,
+                                states: {
+                                    select: {
+                                        fillColor: 'white',
+                                        radius: 6
+                                    }
+                                }
+                        }
+                    }
+                }
+            }
+
+            var result = $.extend(chart, linkToDay);
+            var chart =  Highcharts.chart('container', result );
+
+            var outliers = {{ outliers|safe }};
+            var i = 0;
+            for (x = 0; x< series.length; x++) {
+                    for (i = 0; i < outliers[x].length; i++)
+                        chart.series[x].data[outliers[x][i]].select(null, true);
+                    chart.series[x].setVisible(false, false);
+            }
+
+            chart.series[0].setVisible(true, true);
+
+
+            $('#hide_series').click(function(){
+                for (x = 0; x < chart.series.length; x++)
+                    chart.series[x].setVisible(false, false);
+            }); 
+
+            $('#show_series').click(function(){
+                for (x = 0; x < chart.series.length; x++)
+                    chart.series[x].setVisible(true, false);
+            });
+
+        </script>
+    </body>
+</html>
