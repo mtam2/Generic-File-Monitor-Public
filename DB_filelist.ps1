@@ -1,0 +1,2 @@
+$filelist = Invoke-Sqlcmd "SELECT FileList from log_file_list where CONVERT (date, createtime) >= CONVERT (date, getdate()-1)" -ServerInstance "sqlserver.domain"  
+$filelist | out-file -width 100000 -encoding "UTF8" "C:\Summary\list.txt"
